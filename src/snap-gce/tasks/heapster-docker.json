@@ -1,0 +1,28 @@
+{
+    "version": 1,
+    "name": "docker_metrics_heapster_publisher",
+    "schedule": {
+        "type": "simple",
+        "interval": "10s"
+    },
+    "deadline": "10s",
+    "workflow": {
+        "collect": {
+            "metrics": {
+                "/intel/docker/*": {}
+            },
+            "config": {},
+         "publish":[
+            {
+               "plugin_name": "heapster",
+               "config": {
+                  "stats_depth": 0,
+                  "server_port": 8777,
+                  "stats_span": "10m",
+                  "export_tmpl_file": "builtin"
+               }
+            }
+         ]
+       }
+    }
+}
