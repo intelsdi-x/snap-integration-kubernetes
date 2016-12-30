@@ -3,7 +3,7 @@
 2. [Configuration of Docker container](#2-configuration-of-docker-container)
 
 ### 1. Getting started
-To run Snap inside Docker container you need to have Docker installed. First step is to download Snap repo. All of the needed files are in the `snap-integration-kubernetes` directory.
+To run Snap inside Docker container you need to have Docker installed. First step is to download this repo. All of the needed files are in the `snap-integration-kubernetes` directory.
 ```sh
 $ git clone https://github.com/intelsdi-x/snap-integration-kubernetes/
 $ cd ./snap-integration-kubernetes

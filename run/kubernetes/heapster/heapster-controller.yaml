@@ -20,7 +20,7 @@ spec:
         version: v1.1.0.beta2
     spec:
       containers:
-        - image: intelsdi/heapster4snap:0.1
+        - image: intelsdi/heapster4snap:latest
           name: heapster
           resources:
             limits:
@@ -33,7 +33,7 @@ spec:
             - /heapster
             - --source=kubernetes.snap:''
             - --sink=influxdb:http://monitoring-influxdb:8086
-        - image: intelsdi/heapster4snap:0.1
+        - image: intelsdi/heapster4snap:latest
           name: eventer
           resources:
             limits:

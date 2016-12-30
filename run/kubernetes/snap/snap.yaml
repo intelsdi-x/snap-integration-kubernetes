@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
       - name: snap
-        image: intelsdi/snap4kube:0.1 
+        image: intelsdi/snap4kube:latest 
         # mapping of /proc is required for CPU plugin
         volumeMounts:
           - mountPath: /proc_host

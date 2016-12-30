@@ -4,15 +4,15 @@
 3. [Snap in Tribe mode](#3-snap-in-tribe-mode)
 
 ### 1. Getting started
-To run Snap in Kubernetes and start examples below you need to have Kubernetes cluster set up. If you do not have Kubernetes cluster you can go to GCE section [TODO:link] to start new Kubernetes cluster on GCE with Snap as telemetry solution.
-First step is to download Snap repo. All of the needed files are in the `snap-integration-kubernetes` directory.
+To run Snap in Kubernetes and start examples below you need to have Kubernetes cluster set up. If you do not have Kubernetes cluster you can go to [GCE section](https://github.com/intelsdi-x/snap-integration-kubernetes/run/gce/README.md) to start new Kubernetes cluster on GCE with Snap as telemetry solution.
+First step is to download this repo. All of the needed files are in the `snap-integration-kubernetes` directory.
 ```sh
 $ git clone https://github.com/intelsdi-x/snap-integration-kubernetes/
 $ cd ./snap-integration-kubernetes
 ```
 
 #### a) Running Snap in Kubernetes - CPU collector plugin example 
-To run Snap in Kubernetes pods create daemonset from manifest file `snap-integration-kubernetes/run/kubernetes/snap/snap.yaml` presented below.
+To run Snap in pod create daemonset from manifest file `snap-integration-kubernetes/run/kubernetes/snap/snap.yaml` presented below.
 ```sh
 apiVersion: extensions/v1beta1
 kind: DaemonSet
@@ -46,7 +46,7 @@ spec:
             path: /proc
 ```
 
-The manifest contains parameters `volumeMounts` and `volume`. Those fields are required for CPU collector plugin to run properly. As it is stated in the documentation (https://github.com/intelsdi-x/snap-plugin-collector-cpu/blob/master/README.md) the plugin gathers information from the file `/proc/stat` residing in the host machine. The original host file `/proc/stat` has to be accessible inside of the container. Running this plugin inside the pod requires mapping of this file inside of the container.  This means that we have to adjust Snap daemonset manifest in order to be able to use CPU plugin inside it. This is done with the use of  `volumeMounts` and `volume` fields.
+The manifest contains parameters `volumeMounts` and `volume`. Those fields are required for CPU collector plugin to run properly. As it is stated in the [documentation](https://github.com/intelsdi-x/snap-plugin-collector-cpu/blob/master/README.md) the plugin gathers information from the file `/proc/stat` residing in the host machine. The original host file `/proc/stat` has to be accessible inside of the container. Running this plugin inside the pod requires mapping of this file inside of the container.  This means that we have to adjust Snap daemonset manifest in order to be able to use CPU plugin inside it. This is done with the use of  `volumeMounts` and `volume` fields.
 
 Let's create Snap daemonset:
 ```sh
@@ -216,7 +216,7 @@ To verify that metrics are being collected in Heapster you may check Heapster po
 $ kubectl logs -f <heapster-pod-name> --namespace=kube-system
 ```
 
-### 2. Configuration of Kubernetes pod
+### 2. Configuration of Snap pod
 Inside Kubernetes pod it is possible to load most of the Snap plugins. The list of all Snap plugins is available in plugin catalog  https://github.com/intelsdi-x/snap/blob/master/docs/PLUGIN_CATALOG.md. After you choose plugin you click the plugin name. This redirects you to the plugin repository. 
 
 To use plugin inside the pod you need to download its binary. In order to get plugin binary URL you go to the `release` section... 

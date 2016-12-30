@@ -16,7 +16,7 @@ spec:
       hostNetwork: true
       containers:
       - name: snap
-        image: intelsdi/snap4kube:0.1 
+        image: intelsdi/snap4kube:latest 
         # mapping of dirs below is required for docker plugin 
         volumeMounts:
           - mountPath: /sys/fs/cgroup
