@@ -57,8 +57,8 @@ func main() {
 
         pluginsDir := os.Getenv("PLUGINS_AUTOLOAD_DIR")
         pluginsToLoad := os.Getenv("PLUGINS_TO_LOAD")
-        snapd := os.Getenv("SNAPD_BIN")
-        snapctl := os.Getenv("SNAPCTL_BIN")
+        snapteld := os.Getenv("SNAPTELD_BIN")
+        snaptel := os.Getenv("SNAPTEL_BIN")
         task := os.Getenv("TASK_AUTOLOAD_FILE")
         tribeSeed := os.Getenv("SNAP_SEED_IP")
         numTribeNodes := os.Getenv("SNAP_TRIBE_NODES")
@@ -89,27 +89,27 @@ func main() {
 	                fmt.Fprintf(w, "Cannot parse response body for tribe members - exiting\n")
                         return
                     }
-	            fmt.Fprintf(w, "Response body for tribe members is valid - about to start snapd\n")
+	            fmt.Fprintf(w, "Response body for tribe members is valid - about to start snapteld\n")
 		    break
                  }
 	         fmt.Fprintf(w, "Listing tribe members not successful - waiting\n")
                  time.Sleep(time.Second)
                  continue
             }
-	    fmt.Fprintf(w, "Starintg snapd with tribe seed: %s\n", tribeSeed)
+	    fmt.Fprintf(w, "Starintg snapteld with tribe seed: %s\n", tribeSeed)
 	    w.Flush()
-            go exec.Command(snapd, "-l", "1", "-o", "/tmp", "-t", "0", "--tribe", "--tribe-seed", tribeSeed).Run()
+            go exec.Command(snapteld, "-l", "1", "-o", "/tmp", "-t", "0", "--tribe", "--tribe-seed", tribeSeed).Run()
             wg.Wait()
 	}
 	fmt.Fprintf(w, "I'm a tribe seed\n")
-        go exec.Command(snapd, "-l", "1", "-o", "/tmp", "-t", "0", "--tribe").Run()
+        go exec.Command(snapteld, "-l", "1", "-o", "/tmp", "-t", "0", "--tribe").Run()
         go func() {
                 defer wg.Done()
                 for true {
 		        w.Flush()
 		        resp, err := http.Get("http://localhost:8181/v1/tribe/members")
                         if err != nil {
-	                        fmt.Fprintf(w, "Error listing tribe members - is snapd ready?\n")
+	                        fmt.Fprintf(w, "Error listing tribe members - is snapteld ready?\n")
                                 time.Sleep(time.Second)
                                 continue
                         }
@@ -128,11 +128,11 @@ func main() {
                                         continue
                                 }
 	                        fmt.Fprintf(w, "Got all tribe members (%+v) - creating agreement: %s\n", tribeNodes, agreement)
-                                exec.Command(snapctl, "agreement", "create", agreement).Run()
+                                exec.Command(snaptel, "agreement", "create", agreement).Run()
 	                        fmt.Fprintf(w, "Attaching all nodes to agreeement... \n")
 				for _, n := range tribeNodes.Body.Members {
 	                            fmt.Fprintf(w, "Attaching node (%+v) to agreeement: %s\n", n, agreement)
-                                    exec.Command(snapctl, "agreement", "join", agreement, n).Run()
+                                    exec.Command(snaptel, "agreement", "join", agreement, n).Run()
 				    time.Sleep(time.Second)
 		                    w.Flush()
 				}
@@ -147,7 +147,7 @@ func main() {
 	                fmt.Fprintf(w, "Loading plugins...\n")
                         resp, err := http.Get("http://localhost:8181/v1/plugins")
                         if err != nil {
-	                        fmt.Fprintf(w, "Error listing plugins - is snapd ready?\n")
+	                        fmt.Fprintf(w, "Error listing plugins - is snapteld ready?\n")
                                 time.Sleep(time.Second)
                                 continue
                         }
@@ -164,7 +164,7 @@ func main() {
 	                                fmt.Fprintf(w, "Too few plugins loaded...\n")
                                         for _, p := range getPlugins(pluginsDir ) {
 	                                        fmt.Fprintf(w, "Loading plugin: %+v\n", p)
-                                                exec.Command(snapctl, "plugin", "load", p).Run()
+                                                exec.Command(snaptel, "plugin", "load", p).Run()
                                         }
                                         time.Sleep(time.Second)
                                         continue
@@ -174,7 +174,7 @@ func main() {
                                 // account for plugins loaded on remote nodes
                                 // TODO improve this
                                 time.Sleep(3 * time.Second)
-                                exec.Command(snapctl, "task", "create", "-t", task).Run()
+                                exec.Command(snaptel, "task", "create", "-t", task).Run()
                                 return
                         }
 	                fmt.Fprintf(w, "Listing plugins not successful - waiting\n")

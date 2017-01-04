@@ -64,8 +64,8 @@ RUN cp -a /go/src/github.com/intelsdi-x/snap-plugin-collector-docker/build/linux
 RUN cp -a /go/src/github.com/intelsdi-x/snap/build/linux/x86_64/plugins/snap-plugin-publisher-mock-file /opt/snap/plugins
 
 # start snap daemon
-ENV SNAPD_BIN /usr/local/bin/snapd
-ENV SNAPCTL_BIN /usr/local/bin/snapctl
+ENV SNAPTELD_BIN /usr/local/sbin/snapteld
+ENV SNAPTEL_BIN /usr/local/bin/snaptel
 ENV PLUGINS_AUTOLOAD_DIR /opt/snap/plugins 
 ENV PLUGINS_TO_LOAD 3
 ENV TASK_AUTOLOAD_FILE /opt/snap/tasks/heapster-docker.json
