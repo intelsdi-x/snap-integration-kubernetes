@@ -69,7 +69,7 @@ function clone_repos {
         echo "===> CLONING docker collector" && git clone https://github.com/intelsdi-x/snap-plugin-collector-docker $HOME/snap-integration-kubernetes/src/snap-gce/snap-plugin-collector-docker
         echo "===> CLONING heapster publisher" && git clone https://github.com/intelsdi-x/snap-plugin-publisher-heapster $HOME/snap-integration-kubernetes/src/snap-gce/snap-plugin-publisher-heapster
         echo "===> CLONING heapster" && git clone https://github.com/intelsdi-x/heapster $HOME/heapster
-        echo "===> CLONING kubernetes" && git clone https://github.com/andrzej-k/kubernetes $HOME/kubernetes
+        echo "===> CLONING kubernetes" && git clone https://github.com/intelsdi-x/kubernetes $HOME/kubernetes
 }
 
 function install_gcloud {
@@ -157,7 +157,7 @@ function build_kubernetes {
         echo "===> BUILDING Kubernetes for project $1"
         sudo apt-get -y install make
         cd $HOME/kubernetes
-        git checkout snap_tribe
+        git checkout snap
         echo "===> FIXING refs to project" 
         sed -i "s/snap4kube-1/$1/g" cluster/addons/snap/snap.yaml
         sed -i "s/snap4kube-1/$1/g" cluster/addons/cluster-monitoring/influxdb/heapster-controller.yaml 
