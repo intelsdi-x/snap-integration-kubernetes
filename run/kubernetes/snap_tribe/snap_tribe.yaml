@@ -1,5 +1,5 @@
 apiVersion: extensions/v1beta1
-kind: DaemonSet 
+kind: DaemonSet
 metadata:
   name: snap
   namespace: kube-system
@@ -13,15 +13,18 @@ spec:
         daemon: snapteld
     spec:
       # this option is required for tribe mode
-      hostNetwork: true
       containers:
       - name: snap
-        image: intelsdi/snap4kube:latest 
-        command:
-        - sleep
-        - inf
-        # mapping of dirs below is required for docker plugin 
+        image: intelsdi/snap4kube:tribe
+        env:
+        - name: MY_POD_IP
+          valueFrom:
+            fieldRef:
+              fieldPath: status.podIP
+        # mapping of dirs below is required for docker plugin
         volumeMounts:
+          - mountPath: /opt/dns
+            name: resolvconf
           - mountPath: /var/log/snap
             name: log
           - mountPath: /sys/fs/cgroup
@@ -34,22 +37,15 @@ spec:
             name: docker
           - mountPath: /proc_host
             name: proc
-        ports:
-        - containerPort: 8181
-          hostPort: 8181
-          name: snap-api
-        - containerPort: 8777
-          hostPort: 8777
-          name: heapster
-        - containerPort: 6000
-          hostPort: 6000
-          name: tribe
         imagePullPolicy: Always
         # privileged mode is required to access mounted volume
         # /var/run/docker.sock
         securityContext:
           privileged: true
       volumes:
+        - name: resolvconf
+          configMap:
+            name: snap-resolvconf
         - name: log
           hostPath:
             path: /var/log/snap
@@ -68,3 +64,4 @@ spec:
         - name: proc
           hostPath:
             path: /proc
+
