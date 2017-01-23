@@ -40,27 +40,13 @@ ENV PATH $GOPATH/bin:/usr/local/go/bin:$PATH
 
 RUN mkdir -p "$GOPATH/src" "$GOPATH/bin" && chmod -R 777 "$GOPATH"
 
-# build start_snap binary
-RUN go get -v "github.com/tools/godep"
-
-# from docs of k8s.io/client-go dependencies section
-WORKDIR /go/src/k8s.io
-RUN git clone https://github.com/kubernetes/client-go
-WORKDIR /go/src/k8s.io/client-go
-RUN git checkout release-1.5
-WORKDIR /go/src/k8s.io/client-go/1.5
-RUN godep restore -v
-RUN rm -rf vendor
-
-COPY start_snap /go/src/start_snap
-WORKDIR /go/src/start_snap
-RUN go build -o start_snap
-RUN cp -a /go/src/start_snap/start_snap /usr/local/bin/start_snap
-
 # start snap daemon
 ENV SNAPTELD_BIN /usr/local/sbin/snapteld
 ENV SNAPTEL_BIN /usr/local/bin/snaptel
-EXPOSE 8181 8777 6000 8182
+EXPOSE 8181 6000 8182
+
+RUN mkdir /snap-pet/
 COPY ./start.sh /
+COPY ./probe.sh /
 ENTRYPOINT ["/start.sh"]
 
