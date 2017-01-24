@@ -412,6 +412,8 @@ spec:
           hostPath:
             path: /proc
 ```
+Using this manifest we will get tribe with 3 members. If you wish to create tribe with larger number of members set parameter `replicas` to desired number of nodes. Maximum number of Snap replicas is the number of nodes in Kubernetes cluster.
+
 After we create StatefulSet we list Snap pods.
 `$ kubectl get pods --all-namespaces -o wide`
 The output should be similar to this:
@@ -442,7 +444,7 @@ Next step is to choose one of the pods to download and load plugins for the whol
 To exec a command inside a container you do not necessarilly need to log into the container. For example, you may download plugins like this: 
 ```sh
 $ kubectl --namespace=kube-system exec snap-0 -- curl -fsL "https://github.com/intelsdi-x/snap-plugin-collector-cpu/releases/download/6/snap-plugin-collector-cpu_linux_x86_64" -o snap-plugin-collector-cpu
-$ kubectl --namespace=kube-system exec snap-0 --  curl -fsL "https://github.com/intelsdi-x/snap-plugin-publisher-file/releases/download/2/snap-plugin-publisher-file_linux_x86_64" -o snap-plugin-publisher-file
+$ kubectl --namespace=kube-system exec snap-0 -- curl -fsL "https://github.com/intelsdi-x/snap-plugin-publisher-file/releases/download/2/snap-plugin-publisher-file_linux_x86_64" -o snap-plugin-publisher-file
 ```
 and load them:
 ```sh

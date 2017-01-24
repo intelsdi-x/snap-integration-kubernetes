@@ -7,7 +7,7 @@ if [ "$(snaptel agreement list | awk '{print $1}' | tail -1)" != "all-nodes" ]; 
     exit 1;
 else
     if [[ $DEBUG ]]; then
-      echo "Conneted";
+      echo "Connected";
     fi
     exit 0;
 fi

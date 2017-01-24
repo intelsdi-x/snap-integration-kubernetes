@@ -4,7 +4,7 @@ metadata:
   labels:
     daemon: snapteld
   name: snap-seed
-  namespace: kube-system
+#  namespace: kube-system
 spec:
   clusterIP: None
   ports:
@@ -20,26 +20,56 @@ apiVersion: "apps/v1beta1"
 kind: StatefulSet
 metadata:
   name: snap
-  namespace: kube-system
+#  namespace: kube-system
 spec:
   serviceName: snap-seed
+  # number of Snap tribe members
   replicas: 3
   template:
     metadata:
       labels:
         daemon: snapteld
+      annotations:
+        scheduler.alpha.kubernetes.io/affinity: >
+          {
+            "podAntiAffinity": {
+              "requiredDuringSchedulingIgnoredDuringExecution": [
+                {
+                  "labelSelector": {
+                    "matchExpressions": [
+                      {
+                        "key": "daemon",
+                        "operator": "In",
+                        "values": [
+                          "snapteld"
+                        ]
+                      }
+                    ]
+                  },
+                  "topologyKey": "kubernetes.io/hostname"
+                }
+              ]
+            }
+          }
     spec:
+      nodeSelector:
+        daemon: snapteld
       containers:
       - name: snap
-        image: intelsdi/snap4kube:tribe
+        image: mkuculyma/snap:tribe
+        lifecycle:
+          postStart:
+            exec:
+              command:
+              - /bin/bash
+              - -c
+              - /tribe.sh
         readinessProbe:
           exec:
             command:
             - /bin/bash
             - -c
             - /probe.sh
-          initialDelaySeconds: 5
-          timeoutSeconds: 5
         ports:
         - containerPort: 6000
           name: seed
@@ -60,6 +90,8 @@ spec:
             valueFrom:
               fieldRef:
                 fieldPath: status.podIP
+          - name: LOG_LEVEL
+            value: "1"
         imagePullPolicy: Always
         volumeMounts:
           - mountPath: /proc_host
