@@ -53,11 +53,11 @@ function parse_args {
 }
  
 function clone_repos {
-        if [ -d "$HOME/snap-integration-kubernetes/src/snap-gce/snap-plugin-collector-docker" ]; then
-                rm -rf $HOME/snap-integration-kubernetes/src/snap-gce/snap-plugin-collector-docker
+        if [ -d "$HOME/snap-integration-kubernetes/src/snap_gce/snap-plugin-collector-docker" ]; then
+                rm -rf $HOME/snap-integration-kubernetes/src/snap_gce/snap-plugin-collector-docker
         fi
-        if [ -d "$HOME/snap-integration-kubernetes/src/snap-gce/snap-plugin-publisher-heapster" ]; then
-                rm -rf $HOME/snap-integration-kubernetes/src/snap-gce/snap-plugin-publisher-heapster
+        if [ -d "$HOME/snap-integration-kubernetes/src/snap_gce/snap-plugin-publisher-heapster" ]; then
+                rm -rf $HOME/snap-integration-kubernetes/src/snap_gce/snap-plugin-publisher-heapster
         fi
         if [ -d "$HOME/heapster" ];then
                 rm -rf $HOME/heapster
@@ -66,8 +66,8 @@ function clone_repos {
                 rm -rf $HOME/kubernetes
         fi
         # Cloning required repos
-        echo "===> CLONING docker collector" && git clone https://github.com/intelsdi-x/snap-plugin-collector-docker $HOME/snap-integration-kubernetes/src/snap-gce/snap-plugin-collector-docker
-        echo "===> CLONING heapster publisher" && git clone https://github.com/intelsdi-x/snap-plugin-publisher-heapster $HOME/snap-integration-kubernetes/src/snap-gce/snap-plugin-publisher-heapster
+        echo "===> CLONING docker collector" && git clone https://github.com/intelsdi-x/snap-plugin-collector-docker $HOME/snap-integration-kubernetes/src/snap_gce/snap-plugin-collector-docker
+        echo "===> CLONING heapster publisher" && git clone https://github.com/intelsdi-x/snap-plugin-publisher-heapster $HOME/snap-integration-kubernetes/src/snap_gce/snap-plugin-publisher-heapster
         echo "===> CLONING heapster" && git clone https://github.com/intelsdi-x/heapster $HOME/heapster
         echo "===> CLONING kubernetes" && git clone https://github.com/intelsdi-x/kubernetes $HOME/kubernetes
 }
@@ -121,7 +121,7 @@ function install_docker {
 
 function build_snap_image {
         #Build snap image
-        cd $HOME/snap-integration-kubernetes/src/snap-gce
+        cd $HOME/snap-integration-kubernetes/src/snap_gce
         echo "===> BUILD snap image for project $1"
         sg docker -c "docker build --no-cache  -t snap ."
         echo "===> TAG snap image"
