@@ -1,3 +1,22 @@
+<!--
+http://www.apache.org/licenses/LICENSE-2.0.txt
+
+
+Copyright 2016 Intel Corporation
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+-->
+
 # Running Snap in various environments
 
 Snap can be deployed to collect metrics in various environments including Docker containers and Kubernetes. It can be run in a Docker container to gather metrics i.e. from host and other containers. Deployment of Snap in Kubernetes cluster gives a possibility to monitor pods in the cluster.
@@ -7,6 +26,8 @@ In this repo you will find information on how to run Snap in those environments.
   * [Snap in Docker container](#snap-in-docker-container)
   * [Snap in Kubernetes](#snap-in-kubernetes)
 2. [Customization and Configuration](#2-customization-and-configuration)
+3. [Contributing](#3-contributing)
+4. [License](#4license-and-authors)
 
 ### 1. Running Snap
 First step is to download this repo. All of the needed files are in the `snap-integration-kubernetes` directory.
@@ -55,3 +76,10 @@ To change configuration of running Snap follow this steps (inside Snap container
 ```bash
 $ kill -HUP `pidof snapteld`
 ```
+### 3. Contributing
+We love contributions!
+
+There's more than one way to give back, from examples to blogs to code updates. See our recommended process in [CONTRIBUTING.md](CONTRIBUTING.md).
+
+### 4. License
+[Snap](http://github.com/intelsdi-x/snap), along with this plugin, is an Open Source software released under the Apache 2.0 [License](LICENSE).
