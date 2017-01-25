@@ -4,7 +4,7 @@ metadata:
   labels:
     daemon: snapteld
   name: snap-seed
-#  namespace: kube-system
+  namespace: kube-system
 spec:
   clusterIP: None
   ports:
@@ -20,7 +20,7 @@ apiVersion: "apps/v1beta1"
 kind: StatefulSet
 metadata:
   name: snap
-#  namespace: kube-system
+  namespace: kube-system
 spec:
   serviceName: snap-seed
   # number of Snap tribe members
@@ -52,11 +52,9 @@ spec:
             }
           }
     spec:
-      nodeSelector:
-        daemon: snapteld
       containers:
       - name: snap
-        image: mkuculyma/snap:tribe
+        image: intelsdi/snap4kube:tribe
         lifecycle:
           postStart:
             exec:
@@ -77,8 +75,6 @@ spec:
           name: tribe
         - containerPort: 8182
           name: api
-        - containerPort: 8083
-          name: listen
         - containerPort: 8181
           name: snap-api
         env:
@@ -92,7 +88,6 @@ spec:
                 fieldPath: status.podIP
           - name: LOG_LEVEL
             value: "1"
-        imagePullPolicy: Always
         volumeMounts:
           - mountPath: /proc_host
             name: proc

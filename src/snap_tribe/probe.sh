@@ -1,6 +1,6 @@
 #! /bin/bash
 
-if [ "$(snaptel agreement list | awk '{print $1}' | tail -1)" != "all-nodes" ]; then
+if [ "$(snaptel agreement list | grep all-nodes | awk '{print $1}')" != "all-nodes" ]; then
     if [[ $DEBUG ]]; then
         echo "Not connected";
     fi

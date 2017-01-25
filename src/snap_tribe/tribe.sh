@@ -4,11 +4,13 @@ if [ "$INITIAL_MEMBER" == "$HOSTNAME" ];then
     snaptel agreement create all-nodes
 fi
 
-for i in {1..1000}
+for i in {1..60}
 do
     curl localhost:8181/v1/plugins
-	if [[ $? == "7" ]]
+	if [[ $? == "0" ]]
 	    then
+                break
+        else
                 sleep 1
         fi
 done

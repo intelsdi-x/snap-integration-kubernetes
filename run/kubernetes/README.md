@@ -343,6 +343,8 @@ The command above creates [StatefulSet](https://kubernetes.io/docs/tutorials/sta
 
 Kubernetes manifest used to create Snap StatefulSet is presented below:
 ```sh
+apiVersion: v1
+kind: Service
 metadata:
   labels:
     daemon: snapteld
@@ -366,23 +368,51 @@ metadata:
   namespace: kube-system
 spec:
   serviceName: snap-seed
+  # number of Snap tribe members
   replicas: 3
   template:
     metadata:
       labels:
         daemon: snapteld
+      annotations:
+        scheduler.alpha.kubernetes.io/affinity: >
+          {
+            "podAntiAffinity": {
+              "requiredDuringSchedulingIgnoredDuringExecution": [
+                {
+                  "labelSelector": {
+                    "matchExpressions": [
+                      {
+                        "key": "daemon",
+                        "operator": "In",
+                        "values": [
+                          "snapteld"
+                        ]
+                      }
+                    ]
+                  },
+                  "topologyKey": "kubernetes.io/hostname"
+                }
+              ]
+            }
+          }
     spec:
       containers:
       - name: snap
         image: intelsdi/snap4kube:tribe
+        lifecycle:
+          postStart:
+            exec:
+              command:
+              - /bin/bash
+              - -c
+              - /tribe.sh
         readinessProbe:
           exec:
             command:
             - /bin/bash
             - -c
             - /probe.sh
-          initialDelaySeconds: 5
-          timeoutSeconds: 5
         ports:
         - containerPort: 6000
           name: seed
@@ -390,8 +420,6 @@ spec:
           name: tribe
         - containerPort: 8182
           name: api
-        - containerPort: 8083
-          name: listen
         - containerPort: 8181
           name: snap-api
         env:
@@ -403,7 +431,8 @@ spec:
             valueFrom:
               fieldRef:
                 fieldPath: status.podIP
-        imagePullPolicy: Always
+          - name: LOG_LEVEL
+            value: "1"
         volumeMounts:
           - mountPath: /proc_host
             name: proc
@@ -412,7 +441,7 @@ spec:
           hostPath:
             path: /proc
 ```
-Using this manifest we will get tribe with 3 members. If you wish to create tribe with larger number of members set parameter `replicas` to desired number of nodes. Maximum number of Snap replicas is the number of nodes in Kubernetes cluster.
+Using this manifest we will get tribe with 3 members. If you wish to create tribe with larger number of members set parameter `replicas` to desired number of nodes. Maximum number of Snap replicas is the number of nodes in Kubernetes cluster. Option `anti-affinity` prevents from spawning more than one Snap instance on a single node. So the maximum number of Snap instances is the number of nodes in a cluster with each Snap instance running on a separate node.
 
 After we create StatefulSet we list Snap pods.
 `$ kubectl get pods --all-namespaces -o wide`
