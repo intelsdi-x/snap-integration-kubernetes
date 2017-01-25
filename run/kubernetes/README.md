@@ -331,170 +331,175 @@ will provide information whether the metrics collection was successfull or not.
 This way you may download and load almost any Snap plugin inside the Kubernetes pod.
 
 ### 3. Snap in Tribe mode
-Snap can be run in a tribe mode. Tribe mode causes Snap instances to form a cluster. This allows user to create agreements and add Snap instances to those agreements. When an action is taken by one Snap instance that is a member of an agreement, that action will be carried out by all other members of the agreement. When a new Snap joins an existing agreement it will retrieve plugins and tasks from the members of the agreement. As you may read in the doumentation (https://github.com/intelsdi-x/snap/blob/master/docs/TRIBE.md) tribe mode is a beta feature yet. However it has been successfully set up and tested in a configuration presented in this section.
+Snap can be run in a tribe mode. Tribe mode causes Snap instances to form a cluster. This allows user to create agreements and add Snap instances to those agreements. When an action is taken by one Snap instance that is a member of an agreement, that action will be carried out by all other members of the agreement. When a new Snap joins an existing agreement it will retrieve plugins and tasks from the members of the agreement. As you may read in the [documentation](https://github.com/intelsdi-x/snap/blob/master/docs/TRIBE.md) tribe mode is a beta feature yet. However it has been successfully set up and tested in a configuration presented in this section.
 
-#### a) Kubernetes manifest customization
-First we need to add a command argument to Kubernetes manifest. Command "sleep" and "inf" will allow to execute own command in the container. 
+#### a) Creating Snap tribe in Kubernetes
+
+In order to get Snap in tribe mode up and running you simply create set of Snap pods from Kubernetes manifest:
 ```sh
-apiVersion: extensions/v1beta1
-kind: DaemonSet
+$ kubectl create -f snap-integration-kubernetes/run/kubernetes/snap_tribe/snap_tribe.yaml
+```
+The command above creates [StatefulSet](https://kubernetes.io/docs/tutorials/stateful-application/basic-stateful-set/). This kind of set allows to manage the order in which pods are created. First Snap seed is being created, and when it is ready other pods are being created and join the tribe.
+
+Kubernetes manifest used to create Snap StatefulSet is presented below:
+```sh
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    daemon: snapteld
+  name: snap-seed
+  namespace: kube-system
+spec:
+  clusterIP: None
+  ports:
+  - port: 6000
+    protocol: TCP
+    name: tribe
+  - port: 8181
+    name: api
+  selector:
+    daemon: snapteld
+---
+apiVersion: "apps/v1beta1"
+kind: StatefulSet
 metadata:
   name: snap
   namespace: kube-system
-  labels:
-    kubernetes.io/cluster-service: "true"
 spec:
+  serviceName: snap-seed
+  # number of Snap tribe members
+  replicas: 3
   template:
     metadata:
-      name: snap
       labels:
         daemon: snapteld
+      annotations:
+        scheduler.alpha.kubernetes.io/affinity: >
+          {
+            "podAntiAffinity": {
+              "requiredDuringSchedulingIgnoredDuringExecution": [
+                {
+                  "labelSelector": {
+                    "matchExpressions": [
+                      {
+                        "key": "daemon",
+                        "operator": "In",
+                        "values": [
+                          "snapteld"
+                        ]
+                      }
+                    ]
+                  },
+                  "topologyKey": "kubernetes.io/hostname"
+                }
+              ]
+            }
+          }
     spec:
-      # this option is required for tribe mode
-      hostNetwork: true
       containers:
       - name: snap
-        image: intelsdi/snap4kube:0.1
-        command:
-        - sleep
-        - inf
-        # mapping of dirs below is required for docker plugin
+        image: intelsdi/snap4kube:tribe
+        lifecycle:
+          postStart:
+            exec:
+              command:
+              - /bin/bash
+              - -c
+              - /tribe.sh
+        readinessProbe:
+          exec:
+            command:
+            - /bin/bash
+            - -c
+            - /probe.sh
+        ports:
+        - containerPort: 6000
+          name: seed
+        - containerPort: 6001
+          name: tribe
+        - containerPort: 8182
+          name: api
+        - containerPort: 8181
+          name: snap-api
+        env:
+          - name: SEED
+            value: "snap-0.snap-seed.default.svc.cluster.local"
+          - name: INITIAL_MEMBER
+            value: "snap-0"
+          - name: POD_IP
+            valueFrom:
+              fieldRef:
+                fieldPath: status.podIP
+          - name: LOG_LEVEL
+            value: "1"
         volumeMounts:
-          - mountPath: /sys/fs/cgroup
-            name: cgroup
-          - mountPath: /var/run/docker.sock
-            name: docker-sock
-          - mountPath: /var/lib/docker
-            name: fs-stats
-          - mountPath: /usr/local/bin/docker
-            name: docker
           - mountPath: /proc_host
             name: proc
-        ports:
-        - containerPort: 8181
-          hostPort: 8181
-          name: snap-api
-        - containerPort: 8777
-          hostPort: 8777
-          name: heapster
-        - containerPort: 6000
-          hostPort: 6000
-          name: tribe
-        imagePullPolicy: Always
-        # privileged mode is required to access mounted volume
-        # /var/run/docker.sock
-        securityContext:
-          privileged: true
       volumes:
-        - name: cgroup
-          hostPath:
-            path: /sys/fs/cgroup
-        - name: docker-sock
-          hostPath:
-            path: /var/run/docker.sock
-        - name: fs-stats
-          hostPath:
-            path: /var/lib/docker
-        - name: docker
-          hostPath:
-            path: /usr/bin/docker
         - name: proc
           hostPath:
             path: /proc
 ```
-Then we create daemonset and list Snap pods.
-```sh
-kubectl create -f snap-integration-kubernetes/run/kubernetes/snap/snap_docker.yaml
-kubectl get pods --all-namespaces -o wide
-```
+Using this manifest we will get tribe with 3 members. If you wish to create tribe with larger number of members set parameter `replicas` to desired number of nodes. Maximum number of Snap replicas is the number of nodes in Kubernetes cluster. Option `anti-affinity` prevents from spawning more than one Snap instance on a single node. So the maximum number of Snap instances is the number of nodes in a cluster with each Snap instance running on a separate node.
+
+After we create StatefulSet we list Snap pods.
+`$ kubectl get pods --all-namespaces -o wide`
 The output should be similar to this:
 ```sh
-kube-system   snap-ljzuh                               1/1       Running   0          14s       10.91.97.192   10.91.97.192
-kube-system   snap-4vcny                               1/1       Running   0          14s       10.91.97.193   10.91.97.193
-kube-system   snap-bc47e                               1/1       Running   0          14s       10.91.97.194   10.91.97.194
-kube-system   snap-x2kjd                               1/1       Running   0          14s       10.91.97.195   10.91.97.195
+NAME                               READY     STATUS    RESTARTS   AGE
+snap-0                             1/1       Running   0          2h
+snap-1                             1/1       Running   0          2h
+snap-2                             1/1       Running   0          2h
 ```
-
-#### b) Adding Snap instances to tribe 
-Next step is to choose one of the pods to be seed and exec command:
-```sh
-$ kubectl --namespace=kube-system exec snap-ljzuh -- snapteld --tribe --tribe-addr 10.91.97.192 --tribe-seed 10.91.97.192 --tribe-port 6000
-```
-After that you press `ctrl + c` to return to the console.
-```sh
-$ kubectl --namespace=kube-system exec snap-4vcny -- snapteld --tribe --tribe-addr 10.91.97.193 --tribe-seed 10.91.97.192 --tribe-port 6000
-$ [ctrl + c]
-```
-You repeat the same action for every pod you want to join to Snap tribe, adding `--tribe-addr` parameter with the IP address of the host running Snap. 
-```sh
-$ kubectl --namespace=kube-system exec snap-bc47e -- snapteld --tribe --tribe-addr 10.91.97.194 --tribe-seed 10.91.97.192 --tribe-port 6000
-$ [ctrl + c]
-$ kubectl --namespace=kube-system exec snap-x2kjd -- snapteld --tribe --tribe-addr 10.91.97.195 --tribe-seed 10.91.97.192 --tribe-port 6000
-$ [ctrl + c]
-```
-After you have all Snap instances added to tribe, you may list them with command:
-```sh
-kubectl --namespace=kube-system exec snap-eplj3 -- snaptel member list 
-```
+After you have all Snap instances running in tribe, you may list them with command:
+`$ kubectl --namespace=kube-system exec snap-0 -- snaptel member list`
 The output should be similar to:
 ```sh
 Name
-node3
-node1
-mon1
-node2
+snap-0
+snap-1
+snap-2
 ```
-The command lists hostnames of all members of a tribe. When you run
-```sh
-$ kubectl --namespace=kube-system exec snap-eplj3 -- snaptel agreement list
-```
-The output is `None`, because Snap instances form a tribe, but they are not assigned to any agreement. Let's create an agreement.
-
-#### c) Creating and joining an agreement
-To create an agreement with an exemplary name `all-nodes` we use command:
-```sh
-$ kubectl --namespace=kube-system exec snap-eplj3 -- snaptel agreement create all-nodes
-```
-The output confirms creation of the agreement:
+You may also check that they all are members of the agreement `all-nodes`.
+`$ kubectl --namespace=kube-system exec snap-0 -- snaptel agreement list`
 ```sh
 Name 		 Number of Members 	 plugins 	 tasks
-all-nodes 	 0 			  		 0           0
-```
-There are no nodes added to the `all-nodes` agreement yet. To add all nodes to the agreement you use commands below (replace hostnames with hostnames returned by your `snaptel member list` command):
-```sh
-$ kubectl --namespace=kube-system exec snap-eplj3 -- snaptel agreement join all-nodes mon1
-$ kubectl --namespace=kube-system exec snap-eplj3 -- snaptel agreement join all-nodes node1
-$ kubectl --namespace=kube-system exec snap-eplj3 -- snaptel agreement join all-nodes node2
-$ kubectl --namespace=kube-system exec snap-eplj3 -- snaptel agreement join all-nodes node3
-```
-Each time you run this command the number of member increments:
-```sh
-Name 		 Number of Members 	 plugins 	 tasks
-all-nodes 	 4 			         0 		     0
+all-nodes 	 3 			         0 		     0
 ```
 
-#### d) Loading plugins
+#### b) Loading plugins in tribe
+Next step is to choose one of the pods to download and load plugins for the whole tribe. 
 To exec a command inside a container you do not necessarilly need to log into the container. For example, you may download plugins like this: 
 ```sh
-$ kubectl --namespace=kube-system exec snap-eplj3 -- curl -fsL "https://github.com/intelsdi-x/snap-plugin-collector-docker/releases/download/5/snap-plugin-collector-docker_linux_x86_64" -o snap-plugin-collector-docker
-$ kubectl --namespace=kube-system exec snap-eplj3 --  curl -fsL "https://github.com/intelsdi-x/snap-plugin-publisher-file/releases/download/2/snap-plugin-publisher-file_linux_x86_64" -o snap-plugin-publisher-file
+$ kubectl --namespace=kube-system exec snap-0 -- curl -fsL "https://github.com/intelsdi-x/snap-plugin-collector-cpu/releases/download/6/snap-plugin-collector-cpu_linux_x86_64" -o snap-plugin-collector-cpu
+$ kubectl --namespace=kube-system exec snap-0 -- curl -fsL "https://github.com/intelsdi-x/snap-plugin-publisher-file/releases/download/2/snap-plugin-publisher-file_linux_x86_64" -o snap-plugin-publisher-file
 ```
 and load them:
 ```sh
-$ kubectl --namespace=kube-system exec snap-eplj3 -- snaptel plugin load snap-plugin-collector-docker
-$ kubectl --namespace=kube-system exec snap-eplj3 -- snaptel plugin load snap-plugin-publisher-file
+$ kubectl --namespace=kube-system exec snap-0 -- snaptel plugin load snap-plugin-collector-cpu
+$ kubectl --namespace=kube-system exec snap-0 -- snaptel plugin load snap-plugin-publisher-file
 ```
 We can also create task:
 ```sh
-$ kubectl --namespace=kube-system exec snap-eplj3 -- curl -sO "https://raw.githubusercontent.com/intelsdi-x/snap-plugin-collector-docker/master/examples/tasks/docker-file.json"
-$ kubectl --namespace=kube-system exec snap-eplj3 -- snaptel task create -t ./docker-file.json
+$ kubectl --namespace=kube-system exec snap-0 -- curl -sO "https://raw.githubusercontent.com/intelsdi-x/snap-integration-kubernetes/examples/tasks/cpu-file.json"
+$ kubectl --namespace=kube-system exec snap-0 -- snaptel task create -t ./cpu-file.json
 ```
 Now running command:
 ```sh
-$ kubectl --namespace=kube-system exec snap-eplj3 -- snaptel agreement list
+$ kubectl --namespace=kube-system exec snap-0 -- snaptel agreement list
 ```
 will print output:
 ```sh
 Name 		 Number of Members 	 plugins 	 tasks
-all-nodes 	 4 			         2   		 1
+all-nodes 	 3 			         2   		 1
+```
+To check if task runs properly you use command:
+```sh
+$ kubectl --namespace=kube-system exec snap-0 -- snaptel task list
+```
+The output shows tasks and potential errors:
+```sh
+ID 					 NAME 						 STATE 		 HIT 	 MISS 	 FAIL 	 CREATED 		 LAST FAILURE
+20eeb0d0-f1bb-4af6-874a-45fc39697f74 	 Task-03208b37-608f-4ece-a9cd-99df3180580e 	 Running 	 191 	 0 	 0 	 2:20PM 1-23-2017 	
 ```

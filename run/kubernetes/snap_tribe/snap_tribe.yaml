@@ -1,70 +1,97 @@
-apiVersion: extensions/v1beta1
-kind: DaemonSet 
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    daemon: snapteld
+  name: snap-seed
+  namespace: kube-system
+spec:
+  clusterIP: None
+  ports:
+  - port: 6000
+    protocol: TCP
+    name: tribe
+  - port: 8181
+    name: api
+  selector:
+    daemon: snapteld
+---
+apiVersion: "apps/v1beta1"
+kind: StatefulSet
 metadata:
   name: snap
   namespace: kube-system
-  labels:
-    kubernetes.io/cluster-service: "true"
 spec:
+  serviceName: snap-seed
+  # number of Snap tribe members
+  replicas: 3
   template:
     metadata:
-      name: snap
       labels:
         daemon: snapteld
+      annotations:
+        scheduler.alpha.kubernetes.io/affinity: >
+          {
+            "podAntiAffinity": {
+              "requiredDuringSchedulingIgnoredDuringExecution": [
+                {
+                  "labelSelector": {
+                    "matchExpressions": [
+                      {
+                        "key": "daemon",
+                        "operator": "In",
+                        "values": [
+                          "snapteld"
+                        ]
+                      }
+                    ]
+                  },
+                  "topologyKey": "kubernetes.io/hostname"
+                }
+              ]
+            }
+          }
     spec:
-      # this option is required for tribe mode
-      hostNetwork: true
       containers:
       - name: snap
-        image: intelsdi/snap4kube:latest 
-        command:
-        - sleep
-        - inf
-        # mapping of dirs below is required for docker plugin 
+        image: intelsdi/snap4kube:tribe
+        lifecycle:
+          postStart:
+            exec:
+              command:
+              - /bin/bash
+              - -c
+              - /tribe.sh
+        readinessProbe:
+          exec:
+            command:
+            - /bin/bash
+            - -c
+            - /probe.sh
+        ports:
+        - containerPort: 6000
+          name: seed
+        - containerPort: 6001
+          name: tribe
+        - containerPort: 8182
+          name: api
+        - containerPort: 8181
+          name: snap-api
+        env:
+          - name: SEED
+            value: "snap-0.snap-seed.default.svc.cluster.local"
+          - name: INITIAL_MEMBER 
+            value: "snap-0"
+          - name: POD_IP
+            valueFrom:
+              fieldRef:
+                fieldPath: status.podIP
+          - name: LOG_LEVEL
+            value: "1"
         volumeMounts:
-          - mountPath: /var/log/snap
-            name: log
-          - mountPath: /sys/fs/cgroup
-            name: cgroup
-          - mountPath: /var/run/docker.sock
-            name: docker-sock
-          - mountPath: /var/lib/docker
-            name: fs-stats
-          - mountPath: /usr/local/bin/docker
-            name: docker
           - mountPath: /proc_host
             name: proc
-        ports:
-        - containerPort: 8181
-          hostPort: 8181
-          name: snap-api
-        - containerPort: 8777
-          hostPort: 8777
-          name: heapster
-        - containerPort: 6000
-          hostPort: 6000
-          name: tribe
-        imagePullPolicy: Always
-        # privileged mode is required to access mounted volume
-        # /var/run/docker.sock
-        securityContext:
-          privileged: true
       volumes:
-        - name: log
-          hostPath:
-            path: /var/log/snap
-        - name: cgroup
-          hostPath:
-            path: /sys/fs/cgroup
-        - name: docker-sock
-          hostPath:
-            path: /var/run/docker.sock
-        - name: fs-stats
-          hostPath:
-            path: /var/lib/docker
-        - name: docker
-          hostPath:
-            path: /usr/bin/docker
         - name: proc
           hostPath:
             path: /proc
