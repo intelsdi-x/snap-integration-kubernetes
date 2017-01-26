@@ -73,7 +73,7 @@ func main() {
 
         wg.Add(2)
         if myPodIP != tribeSeed {
-	fmt.Fprintf(w, "I'm NOT a tribe seed... \n")
+	fmt.Fprintf(w, "I'm NOT a tribe seed... waiting for tribe seed.\n")
 	    for true {
 		w.Flush()
 		resp, err := http.Get("http://" + tribeSeed + ":8181/v1/tribe/members")
@@ -92,16 +92,16 @@ func main() {
 	            fmt.Fprintf(w, "Response body for tribe members is valid - about to start snapteld\n")
 		    break
                  }
-	         fmt.Fprintf(w, "Listing tribe members not successful - waiting\n")
+	         fmt.Fprintf(w, "Listing tribe members not successful - waiting for tribe seed\n")
                  time.Sleep(time.Second)
                  continue
             }
-	    fmt.Fprintf(w, "Starintg snapteld with tribe seed: %s\n", tribeSeed)
+	    fmt.Fprintf(w, "Starting snapteld with tribe seed: %s\n", tribeSeed)
 	    w.Flush()
             go exec.Command(snapteld, "-l", "1", "-o", "/tmp", "-t", "0", "--tribe", "--tribe-seed", tribeSeed).Run()
             wg.Wait()
 	}
-	fmt.Fprintf(w, "I'm a tribe seed\n")
+	fmt.Fprintf(w, "I'm a tribe seed. Discovering tribe members.\n")
         go exec.Command(snapteld, "-l", "1", "-o", "/tmp", "-t", "0", "--tribe").Run()
         go func() {
                 defer wg.Done()
