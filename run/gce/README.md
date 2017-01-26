@@ -1,6 +1,6 @@
 # Running Snap on Google Compute Engine
 1. [Start work with Google Cloud Platform](#1-start-work-with-google-cloud-platform)  
-2. [Install kubesnap](#2-install-kubesnap)
+2. [Install Kubernetes and Snap](#2-install-kubernetes-and-snap)
 
 ### 1. Start work with Google Cloud Platform
 

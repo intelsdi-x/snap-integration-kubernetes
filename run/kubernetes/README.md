@@ -1,10 +1,10 @@
 # Running Snap in Kubernetes
 1. [Getting started](#1-getting-started)  
-2. [Configuration of Kubernetes pod](#2-configuration-of-kubernetes-pod)  
+2. [Configuration of Snap pod](#2-configuration-of-snap-pod)  
 3. [Snap in Tribe mode](#3-snap-in-tribe-mode)
 
 ### 1. Getting started
-To run Snap in Kubernetes and start examples below you need to have Kubernetes cluster set up. If you do not have Kubernetes cluster you can go to [GCE section](https://github.com/intelsdi-x/snap-integration-kubernetes/run/gce/README.md) to start new Kubernetes cluster on GCE with Snap as telemetry solution.
+To run Snap in Kubernetes and start examples below you need to have Kubernetes cluster set up. If you do not have Kubernetes cluster you can go to [GCE section](https://github.com/intelsdi-x/snap-integration-kubernetes/tree/master/run/gce/README.md) to start new Kubernetes cluster on GCE with Snap as telemetry solution.
 First step is to download this repo. All of the needed files are in the `snap-integration-kubernetes` directory.
 ```sh
 $ git clone https://github.com/intelsdi-x/snap-integration-kubernetes/
@@ -96,8 +96,8 @@ If you want to know how to load other plugins read the section [TODO: link].
 #### b) Running Snap in Kubernetes with Heapster
 There is also a possibility to publish metrics gathered by Snap collector to customized Heapster (supporting Snap as data source) (https://github.com/intelsdi-x/heapster). This solution requires:
 - running customized Heapster Docker image with Snap source added so that Heapster can scratch metrics directly from running Snap instances
-- Snap Docker collector (https://github.com/intelsdi-x/snap-plugin-collector-docker)
-- Snap Heapster publisher (https://github.com/intelsdi-x/snap-plugin-publisher-heapster)
+- [Snap Docker collector](https://github.com/intelsdi-x/snap-plugin-collector-docker)
+- [Snap Heapster publisher](https://github.com/intelsdi-x/snap-plugin-publisher-heapster)
 
 ##### Running customized Heapster with Snap source
 To run the customized Heapster image you need to create Heapster service and deployment from manifest files `snap-integration-kubernetes/run/kubernetes/heapster/heapster-service.yaml` and `snap-integration-kubernetes/run/kubernetes/heapster/heapster-controller.yaml`.
@@ -107,7 +107,7 @@ $ kubectl create -f snap-integration-kubernetes/run/kubernetes/heapster/heapster
 ```
 
 ##### Snap Docker collector
-Kubernetes manifest has to be adjusted to use with Snap Docker collector plugin (https://github.com/intelsdi-x/snap-plugin-collector-docker). To start Snap daemonset adjusted to use with Snap Docker collector plugin you simply run the command:
+Kubernetes manifest has to be adjusted to use with [Snap Docker collector plugin](https://github.com/intelsdi-x/snap-plugin-collector-docker). To start Snap daemonset adjusted to use with Snap Docker collector plugin you simply run the command:
 ```sh
 $ kubectl create -f snap-integration-kubernetes/run/kubernetes/snap/snap_docker.yaml
 ```
@@ -299,7 +299,7 @@ spec:
             path: /proc
 
 ```
-More information about mounting of volumes can be found in Kubernetes documentation (http://kubernetes.io/docs/user-guide/volumes/). Environment variable is added with `env` parameter (http://kubernetes.io/docs/tasks/configure-pod-container/define-environment-variable-container/).  
+More information about mounting of volumes can be found in [Kubernetes documentation](http://kubernetes.io/docs/user-guide/volumes/). Environment variable is added with [env parameter](http://kubernetes.io/docs/tasks/configure-pod-container/define-environment-variable-container/).  
 
 In order to run Snap with Docker collector you have to create daemonset from `snap_docker.yaml` file.
 ```sh
