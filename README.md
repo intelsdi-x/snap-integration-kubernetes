@@ -25,9 +25,9 @@ In this repo you will find information on how to run Snap in those environments.
 1. [Running Snap](1#-running-snap) 
   * [Snap in Docker container](#snap-in-docker-container)
   * [Snap in Kubernetes](#snap-in-kubernetes)
-2. [Customization and Configuration](#2-customization-and-configuration)
+2. [Customization and configuration](#2-customization-and-configuration)
 3. [Contributing](#3-contributing)
-4. [License](#4license-and-authors)
+4. [License](#4-license-and-authors)
 
 ### 1. Running Snap
 First step is to download this repo. All of the needed files are in the `snap-integration-kubernetes` directory.
@@ -36,12 +36,12 @@ $ git clone https://github.com/intelsdi-x/snap-integration-kubernetes/
 $ cd ./snap-integration-kubernetes
 ```
 #### Snap in Docker container
-To learn about running Snap in a Docker container run example [Running Snap in Docker container](https://github.com/intelsdi-x/snap-integration-kubernetes/run/docker/README.md).
+To learn about running Snap in a Docker container run example [Running Snap in Docker container](https://github.com/intelsdi-x/snap-integration-kubernetes/tree/master/run/docker/README.md).
 
 #### Snap in Kubernetes
-To learn about running Snap in Kubernetes run example [Running Snap in Kubernetes pod](https://github.com/intelsdi-x/snap-integration-kubernetes/run/kubernetes/README.md).
+To learn about running Snap in Kubernetes run example [Running Snap in Kubernetes pod](https://github.com/intelsdi-x/snap-integration-kubernetes/tree/master/run/kubernetes/README.md).
 
-Here you'll find an example of running [Snap with Kubernetes on Google Compute Engine](https://github.com/intelsdi-x/snap-integration-kubernetes/run/gce/README.md).
+Here you'll find an example of running [Snap with Kubernetes on Google Compute Engine](https://github.com/intelsdi-x/snap-integration-kubernetes/tree/master/run/gce/README.md).
 
 ### 3. Customization and configuration
 Inside Docker container it is possible to load most of the Snap plugins. The list of all Snap plugins is available in [plugin catalog](https://github.com/intelsdi-x/snap/blob/master/docs/PLUGIN_CATALOG.md). After you choose plugin you click the plugin name. This redirects you to the plugin repository. 
@@ -55,9 +55,9 @@ To use plugin inside the container you need to download its binary. In order to 
 <img src="https://cloud.githubusercontent.com/assets/6523391/21221622/69a08e6c-c2be-11e6-916f-f7179332b435.png" width="70%">
 
 
-Many of the plugins require prior configuration and adjustment of container or Kubernetes manifest. The example of such plugin is Snap Docker collector plugin. The Docker collector allows to collect runtime metrics from Docker containers and its host machine. It gathers information about resource usage and performance characteristics. More information about docker collector can be found here: https://github.com/intelsdi-x/snap-plugin-collector-docker.
+Many of the plugins require prior configuration and adjustment of container or Kubernetes manifest. The example of such plugin is Snap Docker collector plugin. The Docker collector allows to collect runtime metrics from Docker containers and its host machine. It gathers information about resource usage and performance characteristics. More information about docker collector can be found [here](https://github.com/intelsdi-x/snap-plugin-collector-docker).
 
-All of the plugins requirements can be found in their documentation. The documentation of the Snap Docker plugin collector can be found here: https://github.com/intelsdi-x/snap-plugin-collector-docker/blob/master/README.md. Docker plugin collector needs access to files residing in the host machine:
+All of the plugins requirements can be found in their documentation. The documentation of the Snap Docker plugin collector can be found [here](https://github.com/intelsdi-x/snap-plugin-collector-docker/blob/master/README.md). Docker plugin collector needs access to files residing in the host machine:
 - `/var/run/docker.sock`
 - `/proc`
 - `/usr/bin/docker`

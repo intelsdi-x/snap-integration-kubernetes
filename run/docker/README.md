@@ -10,7 +10,7 @@ $ cd ./snap-integration-kubernetes
 ```
 
 ### 2. Running Snap in Docker container
-In order to run Snap in a single docker containter you can pull Snap Docker image `intelsdi/snap4kube:0.1` from official Snap repo on DockerHub (https://hub.docker.com/r/intelsdi/snap4kube/) or build it by yourself. 
+In order to run Snap in a single docker containter you can pull Snap Docker image `intelsdi/snap4kube:0.1` from official Snap [repo](https://hub.docker.com/r/intelsdi/snap4kube/) on DockerHub or build it by yourself. 
 
 #### a) Running Snap in a container using DockerHub image
 To run Snap with official image `intelsdi/snap4kube:0.1` from DockerHub repo you simply run the command:
@@ -42,7 +42,7 @@ The output should be `No plugins found. Have you loaded a plugin?` as there are 
 #### d) Loading Snap plugins inside running container - CPU collector plugin example 
 Inside a container you may use many different Snap plugins. Most of them require configuration. All of the plugins requirements can be found in their documentation. 
 
-In this section we show how to configure and load CPU plugin collector https://github.com/intelsdi-x/snap-plugin-collector-cpu inside a container. The documentation of the Snap CPU plugin collector can be found here: https://github.com/intelsdi-x/snap-plugin-collector-cpu/blob/master/README.md. As it is stated in the documentation, the CPU plugin collector gathers information from the file `/proc/stat` residing in the host machine. Running this plugin inside the container requires mapping of this file inside of the container. The original host file `/proc/stat` has to be available inside of the container. This means that we have to adjust Snap container in order to be able to use CPU plugin inside it.
+In this section we show how to configure and load [CPU plugin collector](https://github.com/intelsdi-x/snap-plugin-collector-cpu) inside a container. The documentation of the Snap CPU plugin collector can be found [here](https://github.com/intelsdi-x/snap-plugin-collector-cpu/blob/master/README.md). As it is stated in the documentation, the CPU plugin collector gathers information from the file `/proc/stat` residing in the host machine. Running this plugin inside the container requires mapping of this file inside of the container. The original host file `/proc/stat` has to be available inside of the container. This means that we have to adjust Snap container in order to be able to use CPU plugin inside it.
 
 In a Docker container mapping of the files is done with the addition of `-v` flag when running the container. 
 ```sh
@@ -92,7 +92,7 @@ More information and examples of loading plugins is described in section [Config
 
 
 ### 2. Configuration of Docker container
-Inside Docker container it is possible to load most of the Snap plugins. The list of all Snap plugins is available in plugin catalog  https://github.com/intelsdi-x/snap/blob/master/docs/PLUGIN_CATALOG.md. After you choose plugin you click the plugin name. This redirects you to the plugin repository. 
+Inside Docker container it is possible to load most of the Snap plugins. The list of all Snap plugins is available in [plugin catalog](https://github.com/intelsdi-x/snap/blob/master/docs/PLUGIN_CATALOG.md). After you choose plugin you click the plugin name. This redirects you to the plugin repository. 
 
 To use plugin inside the container you need to download its binary. In order to get plugin binary URL you go to the `release` section... 
 
@@ -103,7 +103,7 @@ To use plugin inside the container you need to download its binary. In order to 
 <img src="https://cloud.githubusercontent.com/assets/6523391/21221622/69a08e6c-c2be-11e6-916f-f7179332b435.png" width="70%">
 
 
-Many of the plugins require prior configuration and adjustment of container. The example of such plugin is Snap Docker collector plugin. The Docker collector allows to collect runtime metrics from Docker containers and its host machine. It gathers information about resource usage and performance characteristics. More information about docker collector can be found here: https://github.com/intelsdi-x/snap-plugin-collector-docker.
+Many of the plugins require prior configuration and adjustment of container. The example of such plugin is Snap Docker collector plugin. The Docker collector allows to collect runtime metrics from Docker containers and its host machine. It gathers information about resource usage and performance characteristics. More information about docker collector can be found [here](https://github.com/intelsdi-x/snap-plugin-collector-docker).
 
 All of the plugins requirements can be found in their documentation. The documentation of the Snap Docker plugin collector can be found here: https://github.com/intelsdi-x/snap-plugin-collector-docker/blob/master/README.md. Docker plugin collector needs access to files residing in the host machine:
 - `/var/run/docker.sock`
