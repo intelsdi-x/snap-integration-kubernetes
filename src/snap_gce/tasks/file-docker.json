@@ -150,7 +150,7 @@
                 "/intel/docker/*/stats/network/*/tx_bytes": {}, 
                 "/intel/docker/*/stats/network/*/tx_dropped": {}, 
                 "/intel/docker/*/stats/network/*/tx_errors": {}, 
-                "/intel/docker/*/stats/network/*/tx_packets": {}
+                "/intel/docker/*/stats/network/*/tx_packets": {} 
             },
             "publish": [
                 {
