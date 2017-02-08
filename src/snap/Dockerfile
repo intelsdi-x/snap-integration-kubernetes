@@ -17,7 +17,7 @@
 FROM ubuntu:16.04
 MAINTAINER Maria Rolbiecka maria.a.rolbiecka@intel.com
 
-RUN apt-get update && apt-get install -y curl
+RUN apt-get update && apt-get install -y curl wget
 
 ENV SNAP_VERSION 1.0.0
 ENV SNAP_DOWNLOAD_URL https://github.com/intelsdi-x/snap/releases/download/${SNAP_VERSION}/snap-${SNAP_VERSION}-linux-amd64.tar.gz
@@ -45,4 +45,5 @@ RUN mkdir /var/log/autoload
 EXPOSE 8181 8777
 
 COPY snapteld.conf /etc/snap/snapteld.conf
-CMD /usr/local/sbin/snapteld 
+COPY start.sh /
+ENTRYPOINT ["/start.sh"]
