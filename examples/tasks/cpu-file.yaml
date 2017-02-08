@@ -1,0 +1,15 @@
+version: 1
+schedule:
+  type: simple
+  interval: 5s
+workflow:
+  collect:
+    config:
+      /intel/procfs/cpu:
+        proc_path: /proc_host
+    metrics:
+      /intel/procfs/*: {}
+    publish:
+      plugin_name: file
+      config:
+        file: /tmp/published_cpu.log

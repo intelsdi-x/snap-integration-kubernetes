@@ -2,9 +2,8 @@ apiVersion: extensions/v1beta1
 kind: DaemonSet
 metadata:
   name: snap
-  namespace: {{ .Values.namespace }}
+  namespace: {{ .Release.Namespace }}
   labels:
-    kubernetes.io/cluster-service: "true"
     chart: "{{ .Chart.Name }}-{{ .Chart.Version }}"
 spec:
   template:
@@ -22,7 +21,7 @@ spec:
         ports:
         - containerPort: 8181
         volumeMounts:
-        - name: plugins
+        - name: autoload
           mountPath: {{ .Values.config.autodiscover_path }}
         - name: config
           mountPath: /etc/snap
@@ -31,9 +30,9 @@ spec:
           mountPath: {{ $val | quote }}
         {{- end }}
       volumes:
-      - name: plugins
+      - name: autoload
         hostPath:
-          path: {{ .Values.host_plugins }}
+          path: {{ .Values.host_autoload }}
       - name: config
         configMap:
           name: {{ template "fullname" . }}-config

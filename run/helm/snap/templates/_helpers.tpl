@@ -15,6 +15,11 @@ We truncate at 63 chars because some Kubernetes name fields are limited to this 
 {{- printf "%s-%s" .Release.Name $name | trunc 63 | trimSuffix "-" -}}
 {{- end -}}
 
+{{/*
+Include template with its absolute path.
+The result is
+"include <abs-path-to-tpl>/<tpl-name> ."
+*/}}
 {{- define "template" -}}
 {{- $name := index . 0 -}}
 {{- $context := index . 1 -}}
@@ -23,14 +28,4 @@ We truncate at 63 chars because some Kubernetes name fields are limited to this 
 {{- $last := sub $n 1 | printf "_%d" | index $v -}}
 {{- $wtf := $context.Template.Name | replace $last $name -}}
 {{ include $wtf $context }}
-{{- end -}}
-
-{{- define "hash" -}}
-{{- $name := index . 0 -}}
-{{- $context := index . 1 -}}
-{{- $v:= $context.Template.Name | split "/" -}}
-{{- $n := len $v -}}
-{{- $last := sub $n 1 | printf "_%d" | index $v -}}
-{{- $wtf := $context.Template.Name | replace $last $name -}}
-{{- include $wtf $context | sha256sum | quote -}}
 {{- end -}}

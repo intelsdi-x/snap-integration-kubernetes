@@ -15,8 +15,8 @@
 # log_level for the snap daemon. Supported values are
 # 1 - Debug, 2 - Info, 3 - Warning, 4 - Error, 5 - Fatal.
 # Default value is 3.
-# log_level: {{ .Values.config.log_level }}
-log_level: 2
+log_level: {{ .Values.config.log_level }}
+
 # log_path sets the path for logs for the snap daemon. By
 # default snapteld prints all logs to stdout. Any provided
 # path will send snapteld logs to a file called snapteld.log in
