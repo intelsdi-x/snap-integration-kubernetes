@@ -64,12 +64,12 @@ You will find more information in Helm Guide section [Customizing the Chart Befo
 | `image.repo`              | docker image                                        | intelsdi/snap4kube                |
 | `image.tag`               | docker image tag                                    | latest                            |
 | `image.pullPolicy`        | image pull policy                                   | IfNotPresent                      |
-| `mounts`                  | list of volumes to mount inside the Snap container  | /proc:/proc_host                  |
+| `mounts`                  | volumes to mount list (see [Loading plugins section](#7-loading-snap-plugins))| /proc:/proc_host                  |
 | `host_autoload`           | host path to the directory with plugins and tasks   | /opt/autoload                     |
 | `privileged`              | security context needed to access files on the host | false                             |
 | `config.log_level`        | log level of Snap, (1=debug, 5=error)               | 3                                 |
 | `config.log_path`         | container path to Snap logs                         | /snap                             |
-| `config.autodiscover_path`| list of volumes to mount inside the Snap container  | /opt/snap/autoload                |
+| `config.autodiscover_path`| path for autodiscovery of plugins and tasks         | /opt/snap/autoload                |
 | `autoload`                | list of Snap plugins/tasks URLs to download and load| empty                             |
 
 ## 7. Loading Snap plugins
@@ -84,11 +84,17 @@ autoload:
   - https://github.com/intelsdi-x/snap-plugin-collector-cpu/releases/download/6/snap-plugin-collector-cpu_linux_x86_64
   - https://github.com/intelsdi-x/snap-plugin-publisher-file/releases/download/2/snap-plugin-publisher-file_linux_x86_64
   - https://raw.githubusercontent.com/intelsdi-x/snap-integration-kubernetes/master/examples/tasks/cpu-file.json
+mounts:
+  "/proc": "/proc_host"
 EOF
 ```
 
-With the command above we override default values adding list of URLs of two plugin binaries `snap-plugin-collector-cpu_linux_x86_64` and `snap-plugin-publisher-file_linux_x86_64`.
+With the command above we override default value of `autoload` with the list of URLs of two plugin binaries `snap-plugin-collector-cpu_linux_x86_64` and `snap-plugin-publisher-file_linux_x86_64`.
 The third URL downloads exemplary task for CPU plugin.
+
+Some of the plugins need access to the files residing on the host. Examples of such plugins are CPU collector or Docker collector. In order to use these plugins inside of the container the user needs to mount files that reside on the host so that those files are available inside the container.
+
+CPU collector needs access to the file in "/proc" directory on the host. To configure CPU collector properly we need to mount this file inside of the container. This is what the `mounts` parameter is for. Whole "/proc" directory will be available inside the container under "/proc_host" path.
 
 Now running command:
 

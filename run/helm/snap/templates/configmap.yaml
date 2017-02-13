@@ -5,6 +5,6 @@ metadata:
   namespace: {{ .Release.Namespace }}
 data: 
   snapteld.conf: |
-{{ tuple "config/_snapteld.tpl" . | include "template" | indent 4 }}
+{{ tuple "config/_snapteld.tpl" . | include "template" | indent 4 }} # template _snapteld.tpl to snapteld.conf
   plugins.yaml: |
-{{ tuple "config/_plugins.tpl" . | include "template" | indent 4 -}} 
+{{ tuple "config/_plugins.tpl" . | include "template" | indent 4 -}} # template _plugins.tpl to plugins.yaml
