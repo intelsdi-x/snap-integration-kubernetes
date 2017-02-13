@@ -20,6 +20,18 @@ spec:
           privileged: {{ .Values.privileged }}
         ports:
         - containerPort: 8181
+        livenessProbe:
+          httpGet:
+            path: /v1/plugins
+            port: 8181
+          initialDelaySeconds: 30
+          timeoutSeconds: 5          
+        readinessProbe:
+          httpGet:
+            path: /v1/plugins
+            port: 8181
+          initialDelaySeconds: 30
+          timeoutSeconds: 5          
         volumeMounts:
         - name: autoload
           mountPath: {{ .Values.config.autodiscover_path }}
