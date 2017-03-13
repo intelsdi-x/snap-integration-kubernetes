@@ -1,0 +1,29 @@
+---
+  version: 1
+  name: docker
+  schedule:
+    type: "simple"
+    interval: "10s"
+    deadline: "10s"
+  max-failures: -1
+  workflow:
+    collect:
+      metrics:
+        /intel/docker/*/stats/cgroups/cpu_stats/*: {}
+        /intel/docker/*/stats/cgroups/memory_stats/*: {}
+        /intel/docker/*/stats/filesystem/*: {}
+      config:
+        /intel/docker:
+          procfs: "/proc_host"
+      publish:
+      - plugin_name: "influxdb"
+        config:
+          host: "monitoring-influxdb"
+          port: 8086
+          database: "snap"
+          user: admin 
+          password: admin
+          scheme: http
+          skip-verify: true
+          isMultiFields: false 
+

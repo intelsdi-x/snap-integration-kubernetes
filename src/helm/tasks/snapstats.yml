@@ -1,0 +1,26 @@
+---
+  version: 1
+  name: snapstats
+  schedule:
+    type: "simple"
+    interval: "5s"
+    deadline: "5s"
+  max-failures: -1
+  workflow:
+    collect:
+      metrics:
+        /grafanalabs/snapstats/*: {}
+      config:
+        /grafanalabs/snapstats:
+          snap-url: "http://localhost:8181"
+      publish:
+      - plugin_name: "influxdb"
+        config:
+          host: "monitoring-influxdb" 
+          port: 8086
+          database: "snap"
+          user: admin
+          password: admin
+          scheme: http
+          skip-verify: true
+          isMultiFields: false

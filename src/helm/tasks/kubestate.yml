@@ -1,0 +1,27 @@
+---
+  version: 1
+  name: kubestate
+  schedule:
+    type: "simple"
+    interval: "10s"
+    deadline: "10s"
+  max-failures: -1
+  workflow:
+    collect:
+      metrics:
+        /grafanalabs/kubestate/pod/*/*/*/status/*: {}
+        /grafanalabs/kubestate/node/*/: {}
+      config:
+        /grafanalabs/kubestate:
+          incluster: true
+      publish:
+      - plugin_name: "influxdb"
+        config:
+          host: "monitoring-influxdb"
+          port: 8086
+          database: "snap"
+          user: admin 
+          password: admin
+          scheme: http
+          skip-verify: true
+          isMultiFields: false 
