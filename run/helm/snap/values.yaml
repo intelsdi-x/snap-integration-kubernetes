@@ -1,0 +1,15 @@
+## Snap image version
+## ref: https://hub.docker.com/r/intelsdi/snap4kube/tags/
+image:
+  repo: intelsdi/snap4kube 
+  tag: helm
+  pullPolicy: IfNotPresent
+mounts:
+  "/proc": "/proc_host"
+host_autoload: /opt/autoload
+privileged: false
+config:
+  log_level: 3
+  log_path: /snap
+  autodiscover_path: /opt/snap/autoload 
+autoload:

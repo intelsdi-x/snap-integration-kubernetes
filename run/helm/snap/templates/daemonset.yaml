@@ -1,0 +1,55 @@
+apiVersion: extensions/v1beta1
+kind: DaemonSet
+metadata:
+  name: snap
+  namespace: {{ .Release.Namespace }}
+  labels:
+    chart: "{{ .Chart.Name }}-{{ .Chart.Version }}"
+spec:
+  template:
+    metadata:
+      name: snap
+      labels:
+        daemon: snapteld
+    spec:
+      containers:
+      - name: {{ .Chart.Name }}
+        image: "{{ .Values.image.repo }}:{{ .Values.image.tag }}"
+        imagePullPolicy: {{ .Values.image.pullPolicy }}
+        securityContext:
+          privileged: {{ .Values.privileged }}
+        ports:
+        - containerPort: 8181
+        livenessProbe:
+          httpGet:
+            path: /v1/plugins
+            port: 8181
+          initialDelaySeconds: 30
+          timeoutSeconds: 5          
+        readinessProbe:
+          httpGet:
+            path: /v1/plugins
+            port: 8181
+          initialDelaySeconds: 30
+          timeoutSeconds: 5          
+        volumeMounts:
+        - name: autoload
+          mountPath: {{ .Values.config.autodiscover_path }}
+        - name: config
+          mountPath: /etc/snap
+        {{- range $key, $val := .Values.mounts }}
+        - name: {{ $key | replace "/" "" | replace "." "" }}
+          mountPath: {{ $val | quote }}
+        {{- end }}
+      volumes:
+      - name: autoload
+        hostPath:
+          path: {{ .Values.host_autoload }}
+      - name: config
+        configMap:
+          name: {{ template "fullname" . }}-config
+      {{- range $key, $val := .Values.mounts }}
+      - name: {{ $key | replace "/" "" | replace "." "" }}
+        hostPath:
+          path: {{ $key | quote }}
+      {{- end }}
