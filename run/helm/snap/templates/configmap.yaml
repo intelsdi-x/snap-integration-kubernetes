@@ -1,0 +1,8 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ template "fullname" . }}-config 
+  namespace: {{ .Release.Namespace }}
+data: 
+  snapteld.conf: |
+{{ tuple "config/_snapteld.tpl" . | include "template" | indent 4 }} # template _snapteld.tpl to snapteld.conf

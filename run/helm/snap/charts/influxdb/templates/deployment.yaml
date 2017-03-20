@@ -1,0 +1,52 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: {{ template "fullname" . }}
+  labels:
+    app: {{ template "fullname" . }}
+    chart: "{{ .Chart.Name }}-{{ .Chart.Version }}"
+    release: {{ .Release.Name | quote }}
+    heritage: {{ .Release.Service | quote }}
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: {{ template "fullname" . }}
+        heritage: {{ .Release.Service | quote }}
+    spec:
+      containers:
+      - name: influxdb
+        image: "{{ .Values.image.repo }}:{{ .Values.image.tag }}"
+        imagePullPolicy: {{ .Values.image.pullPolicy }}
+        ports:
+        - name: api
+          containerPort: {{ .Values.port_number }}
+        livenessProbe:
+          httpGet:
+            path: /ping
+            port: api
+          initialDelaySeconds: 30
+          timeoutSeconds: 5
+        readinessProbe:
+          httpGet:
+            path: /ping
+            port: api
+          initialDelaySeconds: 5
+          timeoutSeconds: 1
+        volumeMounts:
+        - name: influxdb-data
+          mountPath: /var/lib/influxdb
+        - name: influxdb-config
+          mountPath: /etc/influxdb
+      volumes:
+      - name: influxdb-data
+      {{- if .Values.persistence.enabled }}
+        persistentVolumeClaim:
+          claimName: {{ template "fullname" . }}-pvc
+      {{- else }}
+        emptyDir: {}
+      {{- end }}
+      - name: influxdb-config
+        configMap:
+          name: influxdb-config

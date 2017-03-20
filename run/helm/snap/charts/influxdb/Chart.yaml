@@ -1,0 +1,5 @@
+name: influxdb
+version: 0.1.0
+description: Kubernetes deployment for InfluxDB
+keywords:
+- influxdb
