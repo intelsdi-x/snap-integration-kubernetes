@@ -1,0 +1,10 @@
+description: A Helm chart for Kubernetes
+engine: gotpl
+home: https://grafana.net
+maintainers:
+- email: zanhsieh@gmail.com
+  name: Ming Hsieh
+name: grafana
+sources:
+- https://github.com/grafana/grafana
+version: 0.2.1

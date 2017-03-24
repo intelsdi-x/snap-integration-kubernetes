@@ -1,0 +1,16 @@
+apiVersion: v1
+description: Snap monitoring stack for Kubernetes
+keywords:
+  - monitoring
+  - telemetry
+  - metrics
+name: snap
+version: 1.1.0
+sources:
+  - https://github.com/intelsdi-x/snap
+maintainers:
+  - name: Maria Rolbiecka
+    email: maria.a.rolbiecka@intel.com
+  - name: Andrzej Kuriata
+    email: andrzej.kuriata@intel.com
+icon: https://cloud.githubusercontent.com/assets/1744971/20331694/e07e9148-ab5b-11e6-856a-e4e956540077.png

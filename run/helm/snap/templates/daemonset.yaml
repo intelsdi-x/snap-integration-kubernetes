@@ -1,0 +1,81 @@
+apiVersion: extensions/v1beta1
+kind: DaemonSet
+metadata:
+  name: snap
+  namespace: {{ .Release.Namespace }}
+  labels:
+    chart: "{{ .Chart.Name }}-{{ .Chart.Version }}"
+spec:
+  template:
+    metadata:
+      name: snap
+      labels:
+        daemon: snapteld
+    spec:
+      containers:
+      - name: {{ .Chart.Name }}
+        image: "{{ .Values.image.repo }}:{{ .Values.image.tag }}"
+        imagePullPolicy: {{ .Values.image.pullPolicy }}
+        securityContext:
+          privileged: {{ .Values.privileged }}
+        ports:
+        - containerPort: 8181
+        livenessProbe:
+          httpGet:
+            path: /v1/plugins
+            port: 8181
+          initialDelaySeconds: 60
+          timeoutSeconds: 5          
+        readinessProbe:
+          httpGet:
+            path: /v1/plugins
+            port: 8181
+          initialDelaySeconds: 60
+          timeoutSeconds: 5          
+        env:
+          - name: INFLUXDB_USER
+            valueFrom:
+              secretKeyRef:
+                name: {{ .Chart.Name }}-influxdb-auth
+                key: influxdb-user
+          - name: INFLUXDB_PASS
+            valueFrom:
+              secretKeyRef:
+                name: {{ .Chart.Name }}-influxdb-auth
+                key: influxdb-password
+          - name: NODENAME
+            valueFrom:
+              fieldRef:
+                fieldPath: spec.nodeName
+        volumeMounts:
+        - name: proc 
+          mountPath: /proc_host
+        - name: docker-sock
+          mountPath: /var/run/docker.sock
+        - name: docker-bin
+          mountPath: /usr/local/bin/docker
+        - name: docker-lib
+          mountPath: /var/lib/docker
+        - name: sys-fs
+          mountPath: /sys/fs/cgroup
+        - name: config
+          mountPath: /etc/snap
+      volumes:
+      - name: proc
+        hostPath:
+          path: /proc
+      - name: docker-sock
+        hostPath:
+          path: /var/run/docker.sock
+      - name: docker-bin
+        hostPath:
+          path: /usr/bin/docker
+      - name: docker-lib
+        hostPath:
+          path: /var/lib/docker
+      - name: sys-fs
+        hostPath:
+          path: /sys/fs/cgroup
+      - name: config
+        configMap:
+          name: {{ template "fullname" . }}-config
