@@ -3,11 +3,11 @@ apiVersion: batch/v1
 kind: Job
 metadata:
   labels:
-    app: {{ template "fullname" . }}
+    app: {{ template "influxdb.fullname" . }}
     chart: "{{ .Chart.Name }}-{{ .Chart.Version }}"
     release: {{ .Release.Name | quote }}
     heritage: {{ .Release.Service | quote }}
-  name: {{ template "fullname" . }}-create-user-{{ randAlphaNum 5 | lower }}
+  name: {{ template "influxdb.fullname" . }}-create-user-{{ randAlphaNum 5 | lower }}
   annotations:
     "helm.sh/hook": post-install,post-upgrade
 spec:
@@ -15,22 +15,22 @@ spec:
   template:
     metadata:
       labels:
-        app: {{ template "fullname" . }}
+        app: {{ template "influxdb.fullname" . }}
         release: {{ .Release.Name | quote }}
     spec:
       containers:
-      - name: {{ template "fullname" . }}-create-user
+      - name: {{ template "influxdb.fullname" . }}-create-user
         image: {{ .Values.setDefaultUser.image | quote }}
         env:
           - name: INFLUXDB_USER
             valueFrom:
               secretKeyRef:
-                name: {{ template "fullname" . }}-auth
+                name: {{ template "influxdb.fullname" . }}-auth
                 key: influxdb-user
           - name: INFLUXDB_PASSWORD
             valueFrom:
               secretKeyRef:
-                name: {{ template "fullname" . }}-auth
+                name: {{ template "influxdb.fullname" . }}-auth
                 key: influxdb-password
         args:
           - "/bin/sh"
