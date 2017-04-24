@@ -1,6 +1,6 @@
 ---
   version: 1
-  name: kubestate
+  name: psutil 
   schedule:
     type: "simple"
     interval: "10s"
@@ -9,13 +9,9 @@
   workflow:
     collect:
       metrics:
-        /grafanalabs/kubestate/pod/*/*/*/status/*: {}
-        /grafanalabs/kubestate/node/*/: {}
-      config:
-        /grafanalabs/kubestate:
-          incluster: true
+        /intel/psutil/disk/*: {}
       tags:
-        /grafanalabs/kubestate:
+        /intel/psutil:
           nodename:
       publish:
       - plugin_name: "influxdb"
@@ -28,3 +24,4 @@
           scheme: http
           skip-verify: true
           isMultiFields: false 
+
