@@ -3,7 +3,7 @@ kind: Service
 metadata:
   name: monitoring-influxdb
   labels:
-    app: {{ template "fullname" . }}
+    app: {{ template "influxdb.fullname" . }}
     chart: "{{ .Chart.Name }}-{{ .Chart.Version }}"
     release: {{ .Release.Name | quote }}
     heritage: {{ .Release.Service | quote }}
@@ -13,4 +13,4 @@ spec:
     port: {{ .Values.port_number }}
     targetPort: {{ .Values.port_number }}
   selector:
-    app: {{ template "fullname" . }}
+    app: {{ template "influxdb.fullname" . }}
