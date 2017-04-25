@@ -240,7 +240,7 @@
 			"title": "Dashboard Row",
 			"titleSize": "h6"
 		}, {
-			"collapsy": false,
+			"collapse": false,
 			"height": 250,
 			"panels": [{
 				"aliasColors": {},
@@ -957,7 +957,245 @@
 			"showTitle": false,
 			"title": "Dashboard Row",
 			"titleSize": "h6"
-		}],
+		}, {
+                        "collapse": false,
+      			"height": 250,
+      			"panels": [{
+				"aliasColors": {},
+				"bars": false,
+				"datasource": "snap",
+				"fill": 0,
+				"id": 14,
+				"legend": {
+					"avg": false,
+					"current": false,
+					"max": false,
+					"min": false,
+					"show": true,
+					"total": false,
+					"values": false
+				},
+				"lines": true,
+				"linewidth": 1,
+				"links": [],
+				"nullPointMode": "null",
+				"percentage": false,
+				"pointradius": 5,
+				"points": false,
+				"renderer": "flot",
+				"seriesOverrides": [],
+				"span": 12,
+				"stack": false,
+				"steppedLine": false,
+				"targets": [{
+					"alias": "Usage $tag_mount_point",
+					"dsType": "influxdb",
+					"groupBy": [{
+						"params": [
+							"mount_point"
+						],
+						"type": "tag"
+					}],
+					"measurement": "intel/psutil/disk/percent",
+					"policy": "default",
+					"refId": "A",
+					"resultFormat": "time_series",
+					"select": [
+						[{
+							"params": [
+								"value"
+							],
+							"type": "field"
+                  				}]
+					],
+					"tags": [{
+						"key": "node",
+						"operator": "=~",
+						"value": "/^$node$/"
+                			},
+					{
+						"condition": "AND",
+						"key": "mount_point",
+						"operator": "=~",
+						"value": "/^\\/opt\\/disks.g*/"
+					}]
+            			}],
+				"thresholds": [],
+				"timeFrom": null,
+				"timeShift": null,
+				"title": "Individual Disk Usage Percent: $node",
+				"tooltip": {
+					"shared": true,
+					"sort": 0,
+					"value_type": "individual"
+				},
+				"type": "graph",
+				"xaxis": {
+					"mode": "time",
+					"name": null,
+					"show": true,
+					"values": []
+				},
+				"yaxes": [{
+					"format": "percent",
+					"label": null,
+					"logBase": 1,
+					"max": "100",
+					"min": null,
+					"show": true
+				},
+				{
+					"format": "short",
+					"label": null,
+					"logBase": 1,
+					"max": null,
+					"min": null,
+					"show": true
+				}]
+			}],
+			"repeat": null,
+			"repeatIteration": null,
+			"repeatRowId": null,
+			"showTitle": false,
+			"title": "Dashboard Row",
+			"titleSize": "h6"
+		},
+		{
+			"collapse": false,
+			"height": 250,
+			"panels": [{
+				"aliasColors": {},
+				"bars": false,
+				"datasource": "snap",
+				"fill": 0,
+				"id": 15,
+				"legend": {
+					"avg": false,
+					"current": false,
+					"max": false,
+					"min": false,
+					"show": true,
+					"total": false,
+					"values": false
+				},
+				"lines": true,
+				"linewidth": 1,
+				"links": [],
+				"nullPointMode": "null",
+				"percentage": false,
+				"pointradius": 5,
+					"points": false,
+					"renderer": "flot",
+					"seriesOverrides": [],
+					"span": 12,
+					"stack": false,
+					"steppedLine": false,
+					"targets": [{
+						"alias": "Total $tag_mount_point",
+						"dsType": "influxdb",
+						"groupBy": [{
+							"params": [
+								"mount_point"
+							],
+							"type": "tag"
+						}],
+						"measurement": "intel/psutil/disk/total",
+						"policy": "default",
+						"refId": "A",
+						"resultFormat": "time_series",
+						"select": [
+							[{
+								"params": [
+									"value"
+								],
+								"type": "field"
+							}]
+						],
+						"tags": [{
+							"key": "node",
+							"operator": "=~",
+							"value": "/^$node$/"
+						},
+						{
+							"condition": "AND",
+							"key": "mount_point",
+							"operator": "=~",
+							"value": "/^\\/opt\\/disks.g*/"
+                				}]
+            				},
+            				{
+              					"alias": "Used $tag_mount_point",
+              					"dsType": "influxdb",
+              					"groupBy": [{
+							"params": [
+								"mount_point"
+							],
+							"type": "tag"
+						}],
+						"measurement": "intel/psutil/disk/used",
+						"policy": "default",
+						"refId": "B",
+						"resultFormat": "time_series",
+						"select": [
+							[{
+								"params": [
+									"value"
+								],
+                    						"type": "field"
+                  					}]
+						],
+              					"tags": [{
+                  					"key": "node",
+							"operator": "=~",
+							"value": "/^$node$/"
+						},
+                				{
+                  					"condition": "AND",
+                  					"key": "mount_point",
+                  					"operator": "=~",
+                  					"value": "/^\\/opt\\/disks.g*/"
+                				}]
+            				}],
+      					"thresholds": [],
+        				"timeFrom": null,
+          				"timeShift": null,
+          				"title": "Individual Disks Capacity: $node",
+          				"tooltip": {
+           					"shared": true,
+            					"sort": 0,
+            					"value_type": "individual"
+          				},
+          				"type": "graph",
+          				"xaxis": {
+            					"mode": "time",
+            					"name": null,
+            					"show": true,
+            					"values": []
+          				},
+          				"yaxes": [{
+              					"format": "bytes",
+             					"label": null,
+              					"logBase": 1,
+              					"max": "10000000000",
+              					"min": "0",
+              					"show": true
+            				},
+            				{
+              					"format": "short",
+              					"label": null,
+              					"logBase": 1,
+              					"max": null,
+              					"min": null,
+              					"show": true
+            				}]
+        			}],
+      				"repeat": null,
+      				"repeatIteration": null,
+     				"repeatRowId": null,
+      				"showTitle": false,
+      				"title": "Dashboard Row",
+     				"titleSize": "h6"
+    			}],
 		"schemaVersion": 14,
 		"style": "dark",
 		"tags": [],
