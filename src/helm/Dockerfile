@@ -19,7 +19,7 @@ MAINTAINER Maria Rolbiecka maria.a.rolbiecka@intel.com
 
 RUN apt-get update && apt-get install -y curl
 
-ENV SNAP_VERSION 1.0.0
+ENV SNAP_VERSION 1.2.0
 ENV SNAP_DOWNLOAD_URL https://github.com/intelsdi-x/snap/releases/download/${SNAP_VERSION}/snap-${SNAP_VERSION}-linux-amd64.tar.gz
 ENV SNAP_DIR /snap
 
@@ -43,9 +43,10 @@ RUN mkdir -p /var/log/snap /opt/snap/autoload /proc_host
 
 RUN cd /opt/snap/autoload \
     && curl -fSL "https://github.com/raintank/snap-plugin-collector-snapstats/releases/download/v0.0.1/snap-plugin-collector-snapstats" -o snap-plugin-collector-snapstats \
-    && curl -fSL "https://github.com/intelsdi-x/snap-plugin-publisher-influxdb/releases/download/21/snap-plugin-publisher-influxdb_linux_x86_64" -o snap-plugin-publisher-influxdb \
+    && curl -fSL "https://github.com/intelsdi-x/snap-plugin-publisher-influxdb/releases/download/22/snap-plugin-publisher-influxdb_linux_x86_64" -o snap-plugin-publisher-influxdb \
     && curl -fSL "https://github.com/raintank/snap-plugin-collector-kubestate/releases/download/1/snap-plugin-collector-kubestate_linux_x86_64" -o snap-plugin-collector-kubestate \
-    && curl -fSL "https://github.com/intelsdi-x/snap-plugin-collector-docker/releases/download/7/snap-plugin-collector-docker_linux_x86_64" -o snap-plugin-collector-docker
+    && curl -fSL "https://github.com/intelsdi-x/snap-plugin-collector-docker/releases/download/7/snap-plugin-collector-docker_linux_x86_64" -o snap-plugin-collector-docker \
+    && curl -fSL "https://github.com/intelsdi-x/snap-plugin-collector-psutil/releases/download/10/snap-plugin-collector-psutil_linux_x86_64" -o snap-plugin-collector-psutil
 
 RUN chmod -R +x /opt/snap/autoload
 

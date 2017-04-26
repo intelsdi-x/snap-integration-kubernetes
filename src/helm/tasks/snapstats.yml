@@ -13,6 +13,9 @@
       config:
         /grafanalabs/snapstats:
           snap-url: "http://localhost:8181"
+      tags:
+        /grafanalabs/snapstats:
+          nodename: 
       publish:
       - plugin_name: "influxdb"
         config:

@@ -21,11 +21,19 @@ fi
 if [[ -z "$INFLUXDB_PASS" ]]; then
     export INFLUXDB_PASS=admin
 fi
+
+sed -i "s/nodename.*/node: $NODENAME/" /opt/snap/autoload/psutil.yml
+sed -i "s/user.*/user: $INFLUXDB_USER/" /opt/snap/autoload/psutil.yml
+sed -i "s/password.*/password: $INFLUXDB_PASS/" /opt/snap/autoload/psutil.yml
+sed -i "s/nodename.*/node: $NODENAME/" /opt/snap/autoload/kubestate.yml
 sed -i "s/user.*/user: $INFLUXDB_USER/" /opt/snap/autoload/kubestate.yml
 sed -i "s/password.*/password: $INFLUXDB_PASS/" /opt/snap/autoload/kubestate.yml
+sed -i "s/nodename.*/node: $NODENAME/" /opt/snap/autoload/docker.yml
 sed -i "s/user.*/user: $INFLUXDB_USER/" /opt/snap/autoload/docker.yml
 sed -i "s/password.*/password: $INFLUXDB_PASS/" /opt/snap/autoload/docker.yml
+sed -i "s/nodename.*/node: $NODENAME/" /opt/snap/autoload/snapstats.yml
 sed -i "s/user.*/user: $INFLUXDB_USER/" /opt/snap/autoload/snapstats.yml
 sed -i "s/password.*/password: $INFLUXDB_PASS/" /opt/snap/autoload/snapstats.yml
 
-snapteld 
+snapteld
+
